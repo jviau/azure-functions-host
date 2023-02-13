@@ -420,6 +420,8 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost.Diagnostics
                 {
                     _runningFunctions.Add(startedEvent);
                 }
+
+                _metricsPublisher?.OnFunctionStarted(startedEvent.FunctionName, startedEvent.InvocationId.ToString());
             }
 
             internal void FunctionCompleted(FunctionStartedEvent startedEvent)
@@ -432,6 +434,8 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost.Diagnostics
                 _functionMetricsQueue.Enqueue(monitoringEvent);
 
                 RaiseFunctionMetricEvent(startedEvent, _activeFunctionCount, DateTime.UtcNow);
+
+                _metricsPublisher?.OnFunctionCompleted(startedEvent.FunctionName, startedEvent.InvocationId.ToString());
             }
 
             internal void StopTimerAndRaiseFinishedEvent()

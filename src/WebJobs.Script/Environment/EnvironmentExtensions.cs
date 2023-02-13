@@ -285,6 +285,15 @@ namespace Microsoft.Azure.WebJobs.Script
             return (environment.IsLinuxConsumptionOnAtlas() || environment.IsLinuxConsumptionOnLegion()) && !environment.IsManagedAppEnvironment();
         }
 
+        public static bool IsConsumptionV2(this IEnvironment environment)
+        {
+            // temporary for testing
+            return true;
+
+            //string value = environment.GetEnvironmentVariable(AzureWebsiteSku);
+            //return string.Equals(value, ScriptConstants.ConsumptionV2Sku, StringComparison.OrdinalIgnoreCase);
+        }
+
         public static bool IsLinuxConsumptionOnAtlas(this IEnvironment environment)
         {
             return !environment.IsAppService() &&

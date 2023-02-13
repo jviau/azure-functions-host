@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs.Host.Executors;
 using Microsoft.Azure.WebJobs.Host.Storage;
 using Microsoft.Azure.WebJobs.Script.Config;
 using Microsoft.Azure.WebJobs.Script.Configuration;
@@ -263,6 +264,13 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
                     var standbyOptions = s.GetService<IOptionsMonitor<StandbyOptions>>();
                     var hostNameProvider = s.GetService<HostNameProvider>();
                     return new LinuxContainerMetricsPublisher(environment, standbyOptions, logger, hostNameProvider);
+                }
+                else if (environment.IsConsumptionV2())
+                {
+                    var logger = s.GetService<ILogger<ConsumptionV2MetricsPublisher>>();
+                    var standbyOptions = s.GetService<IOptionsMonitor<StandbyOptions>>();
+                    var hostNameProvider = s.GetService<HostNameProvider>();
+                    return new ConsumptionV2MetricsPublisher(environment, standbyOptions, logger, hostNameProvider);
                 }
 
                 return NullMetricsPublisher.Instance;

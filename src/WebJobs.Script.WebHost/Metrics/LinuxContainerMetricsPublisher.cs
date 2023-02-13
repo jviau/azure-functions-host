@@ -294,5 +294,13 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost.Metrics
 
             return request;
         }
+
+        public void OnFunctionStarted(string functionName, string invocationId)
+        {
+        }
+
+        public void OnFunctionCompleted(string functionName, string invocationId)
+        {
+        }
     }
 }
