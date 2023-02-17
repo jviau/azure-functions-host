@@ -40,8 +40,13 @@ namespace Microsoft.Azure.WebJobs.Script.Workers.Rpc
 
         public void Configure(LanguageWorkerOptions options)
         {
+            var isolatedPlaceholderAppSettingValue = _configuration["ISOLATED_PLACEHOLDER"];
+            var shouldStartIsolatedPlaceholder = isolatedPlaceholderAppSettingValue.Equals("1");
+            _logger.LogInformation($"ISOLATED_PLACEHOLDER:{isolatedPlaceholderAppSettingValue}, shouldStartIsolatedPlaceholder:{shouldStartIsolatedPlaceholder}");
+
             string workerRuntime = _environment.GetEnvironmentVariable(RpcWorkerConstants.FunctionWorkerRuntimeSettingName);
-            if (!string.IsNullOrEmpty(workerRuntime) && workerRuntime.Equals(RpcWorkerConstants.DotNetLanguageWorkerName, System.StringComparison.OrdinalIgnoreCase))
+            if (shouldStartIsolatedPlaceholder == false &&
+                !string.IsNullOrEmpty(workerRuntime) && workerRuntime.Equals(RpcWorkerConstants.DotNetLanguageWorkerName, System.StringComparison.OrdinalIgnoreCase))
             {
                 // Skip parsing worker.config.json files for dotnet in-proc apps
                 options.WorkerConfigs = new List<RpcWorkerConfig>();

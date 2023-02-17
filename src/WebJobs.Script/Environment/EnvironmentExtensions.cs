@@ -581,7 +581,13 @@ namespace Microsoft.Azure.WebJobs.Script
             string workerRuntime = environment.GetEnvironmentVariable(RpcWorkerConstants.FunctionWorkerRuntimeSettingName);
             if (!string.IsNullOrEmpty(workerRuntime))
             {
-                placeholderRuntimeSet.Add(workerRuntime);
+                // a .net placeholder site can be used to run an in-proc(dotnet) app or isolated(dotnet-isolated) app.
+                // We will start the dotnet-isolated native placeholder in this case.
+                var placeholderRuntime = workerRuntime.Equals(RpcWorkerConstants.DotNetLanguageWorkerName, StringComparison.OrdinalIgnoreCase)
+                    ? RpcWorkerConstants.DotNetIsolatedLanguageWorkerName
+                    : workerRuntime;
+
+                placeholderRuntimeSet.Add(placeholderRuntime);
             }
             return placeholderRuntimeSet;
         }
