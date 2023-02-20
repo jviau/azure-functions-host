@@ -40,8 +40,8 @@ namespace Microsoft.Azure.WebJobs.Script.Workers.Rpc
 
         public void Configure(LanguageWorkerOptions options)
         {
-            var isolatedPlaceholderAppSettingValue = _configuration["ISOLATED_PLACEHOLDER"];
-            var shouldStartIsolatedPlaceholder = isolatedPlaceholderAppSettingValue.Equals("1");
+            var isolatedPlaceholderAppSettingValue = _configuration[RpcWorkerConstants.FunctionIsolatedPlaceHolderSettingName];
+            var shouldStartIsolatedPlaceholder = string.Equals(isolatedPlaceholderAppSettingValue, "1");
             _logger.LogInformation($"ISOLATED_PLACEHOLDER:{isolatedPlaceholderAppSettingValue}, shouldStartIsolatedPlaceholder:{shouldStartIsolatedPlaceholder}");
 
             string workerRuntime = _environment.GetEnvironmentVariable(RpcWorkerConstants.FunctionWorkerRuntimeSettingName);
