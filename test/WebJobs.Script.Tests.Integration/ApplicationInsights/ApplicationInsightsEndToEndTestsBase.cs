@@ -274,7 +274,7 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.ApplicationInsights
                 !t.Message.Contains("Skipping WorkerConfig for language")
             ).ToArray();
 
-            int expectedCount = 16;
+            int expectedCount = 17;
             Assert.True(traces.Length == expectedCount, $"Expected {expectedCount} messages, but found {traces.Length}. Actual logs:{Environment.NewLine}{string.Join(Environment.NewLine, traces.Select(t => t.Message))}");
 
             int idx = 0;
@@ -292,6 +292,7 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.ApplicationInsights
             ValidateTrace(traces[idx++], "Initializing Host", LogCategories.Startup);
             ValidateTrace(traces[idx++], "Initializing Warmup Extension", LogCategories.CreateTriggerCategory("Warmup"));
             ValidateTrace(traces[idx++], "Job host started", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "FUNCTIONS_ISOLATED_PLACEHOLDER App setting value:, shouldStartIsolatedPlaceholder:False", "Host.LanguageWorkerConfig");
             ValidateTrace(traces[idx++], "Loading functions metadata", LogCategories.Startup);
             ValidateTrace(traces[idx++], "Reading functions metadata", LogCategories.Startup);
             ValidateTrace(traces[idx++], "Starting Host (HostId=", LogCategories.Startup);
