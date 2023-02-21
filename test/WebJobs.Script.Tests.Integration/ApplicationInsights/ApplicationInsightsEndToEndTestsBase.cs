@@ -282,6 +282,7 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.ApplicationInsights
             ValidateTrace(traces[idx++], "2 functions loaded", LogCategories.Startup);
             ValidateTrace(traces[idx++], "A function allow list has been specified", LogCategories.Startup);
             ValidateTrace(traces[idx++], "Found the following functions:\r\n", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "FUNCTIONS_ISOLATED_PLACEHOLDER App setting value:, shouldStartIsolatedPlaceholder:False", "Host.LanguageWorkerConfig");
             ValidateTrace(traces[idx++], "Generating 2 job function(s)", LogCategories.Startup);
             ValidateTrace(traces[idx++], "Host initialization: ConsecutiveErrors=0, StartupCount=1", LogCategories.Startup);
             ValidateTrace(traces[idx++], "Host initialized (", LogCategories.Startup);
@@ -292,7 +293,6 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.ApplicationInsights
             ValidateTrace(traces[idx++], "Initializing Host", LogCategories.Startup);
             ValidateTrace(traces[idx++], "Initializing Warmup Extension", LogCategories.CreateTriggerCategory("Warmup"));
             ValidateTrace(traces[idx++], "Job host started", LogCategories.Startup);
-            ValidateTrace(traces[idx++], "FUNCTIONS_ISOLATED_PLACEHOLDER App setting value:, shouldStartIsolatedPlaceholder:False", "Host.LanguageWorkerConfig");
             ValidateTrace(traces[idx++], "Loading functions metadata", LogCategories.Startup);
             ValidateTrace(traces[idx++], "Reading functions metadata", LogCategories.Startup);
             ValidateTrace(traces[idx++], "Starting Host (HostId=", LogCategories.Startup);
