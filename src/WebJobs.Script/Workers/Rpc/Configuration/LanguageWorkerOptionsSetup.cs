@@ -41,16 +41,22 @@ namespace Microsoft.Azure.WebJobs.Script.Workers.Rpc
         public void Configure(LanguageWorkerOptions options)
         {
             var isolatedPlaceholderAppSettingValue = _configuration[RpcWorkerConstants.FunctionIsolatedPlaceHolderSettingName];
-            var shouldStartIsolatedPlaceholder = string.Equals(isolatedPlaceholderAppSettingValue, "1");
-            _logger.LogInformation($"{RpcWorkerConstants.FunctionIsolatedPlaceHolderSettingName} App setting value:{isolatedPlaceholderAppSettingValue}, shouldStartIsolatedPlaceholder:{shouldStartIsolatedPlaceholder}");
-
-            string workerRuntime = _environment.GetEnvironmentVariable(RpcWorkerConstants.FunctionWorkerRuntimeSettingName);
-            if (shouldStartIsolatedPlaceholder == false &&
-                !string.IsNullOrEmpty(workerRuntime) && workerRuntime.Equals(RpcWorkerConstants.DotNetLanguageWorkerName, System.StringComparison.OrdinalIgnoreCase))
+            var shouldStartIsolatedPlaceholder = false;
+            if (string.Equals(isolatedPlaceholderAppSettingValue, "1"))
             {
-                // Skip parsing worker.config.json files for dotnet in-proc apps
-                options.WorkerConfigs = new List<RpcWorkerConfig>();
-                return;
+                shouldStartIsolatedPlaceholder = true;
+                _logger.LogDebug($"{RpcWorkerConstants.FunctionIsolatedPlaceHolderSettingName} app setting enabled.");
+            }
+
+            var workerRuntime = _environment.GetEnvironmentVariable(RpcWorkerConstants.FunctionWorkerRuntimeSettingName);
+            if (string.Equals(workerRuntime, RpcWorkerConstants.DotNetLanguageWorkerName, StringComparison.OrdinalIgnoreCase))
+            {
+                if (!shouldStartIsolatedPlaceholder)
+                {
+                    // Skip parsing worker.config.json files for dotnet in-proc apps when isolated placeholder app setting is not enabled.
+                    options.WorkerConfigs = new List<RpcWorkerConfig>();
+                    return;
+                }
             }
 
             var configFactory = new RpcWorkerConfigFactory(_configuration, _logger, SystemRuntimeInformation.Instance, _environment, _metricsLogger, _workerProfileManager);
