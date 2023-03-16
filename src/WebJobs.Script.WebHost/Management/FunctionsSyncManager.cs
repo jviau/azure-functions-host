@@ -323,8 +323,12 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost.Management
                 };
             }
 
-            // Add triggers to the payload
+            // Add HostId
             JObject result = new JObject();
+            string hostId = await _hostIdProvider.GetHostIdAsync(CancellationToken.None);
+            result.Add("hostId", hostId);
+
+            // Add triggers to the payload
             result.Add("triggers", triggersArray);
 
             // Add all listable functions details to the payload
@@ -393,15 +397,17 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost.Management
 
             if (json.Length > ScriptConstants.MaxTriggersStringLength && !_environment.IsKubernetesManagedHosting())
             {
-                // The settriggers call to the FE enforces a max request size
-                // limit. If we're over limit, revert to the minimal triggers
-                // format.
+                // The settriggers call to the FE enforces a max request size limit.
+                // If we're over limit, revert to the minimal triggers format.
                 _logger.LogWarning($"SyncTriggers payload of length '{json.Length}' exceeds max length of '{ScriptConstants.MaxTriggersStringLength}'. Reverting to minimal format.");
-                return new SyncTriggersPayload
+
+                var minimalResult = new JObject
                 {
-                    Content = JsonConvert.SerializeObject(triggersArray),
-                    Count = count
+                    { "hostId", hostId },
+                    { "triggers", triggersArray }
                 };
+
+                json = JsonConvert.SerializeObject(minimalResult);
             }
 
             return new SyncTriggersPayload

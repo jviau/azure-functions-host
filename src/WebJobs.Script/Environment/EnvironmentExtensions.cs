@@ -207,6 +207,17 @@ namespace Microsoft.Azure.WebJobs.Script
         }
 
         /// <summary>
+        /// Gets a value indicating whether the application is running in the Consumption V2 Sku.
+        /// </summary>
+        /// <param name="environment">The environment to verify.</param>
+        /// <returns><see cref="true"/> if running in the Consumption V2 Sku, false otherwise.</returns>
+        public static bool IsConsumptionV2Sku(this IEnvironment environment)
+        {
+            string value = environment.GetEnvironmentVariable(AzureWebsiteSku);
+            return string.Equals(value, ScriptConstants.DynamicV2Sku, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
         /// Returns true if the app is running on Virtual Machine Scale Sets (VMSS).
         /// </summary>
         public static bool IsVMSS(this IEnvironment environment)

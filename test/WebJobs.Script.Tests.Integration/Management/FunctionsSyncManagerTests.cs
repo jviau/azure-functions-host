@@ -136,7 +136,7 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.Managment
             _mockEnvironment.Setup(p => p.GetEnvironmentVariable(EnvironmentSettingNames.KubernetesServiceHost)).Returns("");
             _mockEnvironment.Setup(p => p.GetEnvironmentVariable(EnvironmentSettingNames.PodNamespace)).Returns("");
             _mockEnvironment.Setup(p => p.GetEnvironmentVariable(EnvironmentSettingNames.ManagedEnvironment)).Returns((string)null);
-
+            _mockEnvironment.Setup(p => p.GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteSku)).Returns((string)ScriptConstants.DynamicSku);
             _hostNameProvider = new HostNameProvider(_mockEnvironment.Object);
 
             var functionMetadataProvider = new HostFunctionMetadataProvider(optionsMonitor, NullLogger<HostFunctionMetadataProvider>.Instance, new TestMetricsLogger());
@@ -193,8 +193,11 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.Managment
 
                 string syncString = _contentBuilder.ToString();
                 Assert.True(syncString.Length < ScriptConstants.MaxTriggersStringLength);
-                var syncContent = JToken.Parse(syncString);
-                Assert.Equal(JTokenType.Array, syncContent.Type);
+                var syncContent = JObject.Parse(syncString);
+                Assert.Equal(2, syncContent.Count);
+                Assert.Equal("testhostid123", syncContent["hostId"]);
+                JArray triggers = (JArray)syncContent["triggers"];
+                Assert.Equal(2, triggers.Count);
             }
         }
 
@@ -254,8 +257,12 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.Managment
         private void VerifyResultWithCacheOn(string connection = DefaultTestConnection, string expectedTaskHub = "TestHubValue", string durableVersion = "V2")
         {
             string expectedSyncTriggersPayload = GetExpectedSyncTriggersPayload(postedConnection: connection, postedTaskHub: expectedTaskHub, durableVersion);
-            // verify triggers
+
+            // verify root properties
             var result = JObject.Parse(_contentBuilder.ToString());
+            Assert.Equal("testhostid123", result["hostId"]);
+
+            // verify triggers
             var triggers = result["triggers"];
             Assert.Equal(expectedSyncTriggersPayload, triggers.ToString(Formatting.None));
 
