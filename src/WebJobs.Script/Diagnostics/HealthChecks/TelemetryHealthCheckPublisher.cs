@@ -1,4 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System;
@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs.Script.Pools;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +22,7 @@ namespace Microsoft.Azure.WebJobs.Script.Diagnostics.HealthChecks
         public TelemetryHealthCheckPublisher(
             HealthCheckMetrics metrics,
             TelemetryHealthCheckPublisherOptions options,
-            ILogger<TelemetryHealthCheckPublisher> logger)
+            [FromKeyedServices("Forwarding")] ILogger<TelemetryHealthCheckPublisher> logger)
         {
             _metrics = metrics ?? throw new ArgumentNullException(nameof(metrics));
             _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -61,6 +62,8 @@ namespace Microsoft.Azure.WebJobs.Script.Diagnostics.HealthChecks
                 // Construct string showing list of all health entries status and description for logs
                 using PoolRental<StringBuilder> rental = PoolFactory.SharedStringBuilderPool.Rent();
                 string separator = string.Empty;
+
+                rental.Value.Append('{');
                 foreach (var entry in report.Entries)
                 {
                     if (entry.Value.Status != HealthStatus.Healthy)
@@ -69,16 +72,18 @@ namespace Microsoft.Azure.WebJobs.Script.Diagnostics.HealthChecks
                     }
 
                     rental.Value.Append(separator)
-                        .Append(entry.Key)
+                        .Append($"\"{entry.Key}\"")
                         .Append(": {")
-                        .Append("status: ")
-                        .Append(entry.Value.Status.ToString())
-                        .Append(", description: ")
-                        .Append(entry.Value.Description)
+                        .Append($"\"status\": ")
+                        .Append($"\"{entry.Value.Status.ToString()}\"")
+                        .Append(", \"description\": ")
+                        .Append($"\"{entry.Value.Description}\"")
                         .Append('}');
 
                     separator = ", ";
                 }
+
+                rental.Value.Append('}');
 
                 Log.Unhealthy(_logger, tag, report.Status, rental.Value);
             }

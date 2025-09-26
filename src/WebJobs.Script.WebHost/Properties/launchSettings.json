@@ -4,7 +4,14 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "AzureWebJobsScriptRoot": "C:\\repos\\test\\func-apps\\dotnet-good\\bin\\Debug",
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+        "WEBSITE_HOSTNAME": "dotnet-good",
+        "WEBSITE_SITE_NAME": "dotnet-good",
+        "AzureFunctionsJobHost__telemetryMode": "openTelemetry",
+        "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=499345ae-cc6d-4e54-91c1-a537b72a7834;IngestionEndpoint=https://westus2-2.in.applicationinsights.azure.com/;LiveEndpoint=https://westus2.livediagnostics.monitor.azure.com/;ApplicationId=f37fa6eb-4bd9-4a29-b55b-8513b5cb594e"
       },
       "applicationUrl": "https://localhost:62513;http://localhost:62514"
     }
